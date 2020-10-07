@@ -1,0 +1,129 @@
+﻿@model spice.Models.ViewModels.MenuItemViewModel
+@using spice.Extension
+@{
+    ViewData["Title"] = "Detalis MenuItem";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+<h2 class="text-info">Detalis MenuItem</h2>
+<br />
+
+<br />
+<form method="post" asp-action="Edit" enctype="multipart/form-data">
+    <div class=" border backgroundWhite row">
+        <input type="hidden" asp-for="@Model.Menuitem.Id" />
+        <input type="hidden" asp-for="@Model.Menuitem.SubCategory.CategoryId" />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="col-8">
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="Menuitem.Name" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="Menuitem.Name" disabled class="form-control" />
+                </div>
+                <span asp-validation-for="Menuitem.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="Menuitem.Description" class="col-form-label"></label>
+                </div>
+                <div class="col-8" >
+                    @Html.TextArea("Description", Model.Menuitem.Description,  htmlAttributes: new { name = "Description", id = "Description", @class = "form-control" } )
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="Menuitem.price" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <input asp-for="Menuitem.price" disabled class="form-control" />
+                </div>
+                <span asp-validation-for="Menuitem.price" class="text-danger"></span>
+            </div>
+           
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="Menuitem.SubCategory.CategoryId" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <select asp-for="@Model.Menuitem.SubCategory.CategoryId" disabled id="CategoryId" asp-items="Model.Category.ToSelectListItem(Model.Menuitem.SubCategory.CategoryId)" class="form-control"></select>
+                </div>
+                @*<div class="col-5">
+                        <select asp-for="@Model.Menuitem.SubCategory.CategoryId" id="CategoryId" asp-items="ViewBag.FacilityID" class="form-control">
+                            <option value="">Select your Category</option>
+                        </select>
+                    </div>*@
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="Menuitem.SubCategoryId" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <select asp-for="@Model.Menuitem.SubCategoryId" name="SubCategory" disabled id="SubCategoryId" asp-items="@(new SelectList(string.Empty,"Id","Name"))" class="form-control"></select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-4">
+                    <label asp-for="Menuitem.spicyness" class="col-form-label"></label>
+                </div>
+                <div class="col-8">
+                    <select asp-for="@Model.Menuitem.spicyness" disabled asp-items="Html.GetEnumSelectList<MenuItem.Espicy>()" class="form-control"></select>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="col-3 offset-1">
+            <img src="@Model.Menuitem.Image" width="100%" style="border-radius:5px;border:1px solid #bbb9b9;" />
+        </div>
+        <div class="col-8">
+            <div class="col-8 offset-4">
+                <partial name="_DetalisButton" model="@Model.Menuitem.Id" />
+            </div>
+        </div>
+    </div>
+</form>
+
+
+@section scripts{
+    <script src="//cdn.ckeditor.com/4.15.0/basic/ckeditor.js"></script>
+
+    <script src="~/ckeditor/ckeditor.js"></script>
+    <script>
+
+           CKEDITOR.replace("Description");
+    </script>
+
+
+    <script type="text/javascript">
+
+    $(document).ready(function () {
+
+        getsubcategory();
+        $('#CategoryId').change(function () {
+
+            getsubcategory();
+        });
+    });
+
+
+    function getsubcategory() {
+
+        var url = '@Url.Content("~/")' + "Admin/SubCategory/GetSubCategory";
+        var ddlsource = '#CategoryId';
+        $.getJSON(url, { id: $(ddlsource).val() }, function (data) {
+
+            var items = '';
+            $("#SubCategoryId").empty();
+            $.each(data, function (id, subcategory) {
+
+                items += "<option value='" + subcategory.value + "'>" + subcategory.text + "</option>"
+            });
+            $("#SubCategoryId").html(items);
+        });
+    }
+    </script>
+}
