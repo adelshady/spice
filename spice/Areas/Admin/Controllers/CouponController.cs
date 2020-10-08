@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using spice.Data;
 using spice.Models;
+using spice.Utiles;
 
 namespace spice.Areas.Admin.Controllers
 {
+    [Authorize(Roles = SD.MangerUser)]
     [Area("Admin")]
     public class CouponController : Controller
     {

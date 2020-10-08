@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,7 @@ using spice.Utiles;
 
 namespace spice.Areas.Admin.Controllers
 {
+    [Authorize(Roles = SD.MangerUser)]
     [Area("Admin")]
     public class MenuItemController : Controller
     {

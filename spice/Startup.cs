@@ -14,6 +14,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using spice.Services;
 
 namespace spice
 {
@@ -37,6 +39,7 @@ namespace spice
                 .AddDefaultUI()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+         //   services.AddSingleton<IEmailSender, EmailSend>();
             services.AddControllersWithViews();
             services.AddRazorPages();
             services.Configure<FormOptions>(x =>

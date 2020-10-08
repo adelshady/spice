@@ -97,10 +97,22 @@
             </div>
             <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
         </div>
+        @if (User.IsInRole(spice.Utiles.SD.MangerUser))
+        {
+            <div class="form-group row">
+                <div class="col-2">
+                </div>
+                <div class="col-5">
+                    <input type="radio" name="rdUserRole" value="@spice.Utiles.SD.FrontDeskUser" checked /> @spice.Utiles.SD.FrontDeskUser
+                    <input type="radio" name="rdUserRole" value="@spice.Utiles.SD.KitchenUser" checked /> @spice.Utiles.SD.KitchenUser
+                    <input type="radio" name="rdUserRole" value="@spice.Utiles.SD.MangerUser" checked /> @spice.Utiles.SD.MangerUser
+                </div>
+            </div>
+        }
 
         <div class="form-group row">
             <div class="col-5 offset-2">
-                <button type="submit" class="btn btn-primary form-control" >Register</button>
+                <button type="submit" class="btn btn-primary form-control">Register</button>
             </div>
         </div>
     </div>
