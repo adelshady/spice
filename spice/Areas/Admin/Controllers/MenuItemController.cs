@@ -153,14 +153,14 @@ namespace spice.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
         [HttpGet]
-        public async Task<ActionResult> Detalis(int id)
+        public async Task<IActionResult> Detalis(int id)
         {
 
             menuItemViewModel.Menuitem = await db.MenuItem.Include(x => x.SubCategory).Include(x => x.SubCategory.Category).SingleOrDefaultAsync(x => x.Id == id);
             return View(menuItemViewModel);
         }
 
-        public async Task<ActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
 
             menuItemViewModel.Menuitem = await db.MenuItem.Include(x => x.SubCategory).Include(x => x.SubCategory.Category).SingleOrDefaultAsync(x => x.Id == id);

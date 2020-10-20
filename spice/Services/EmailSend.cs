@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace spice.Services
 {
-    //public class EmailSend : IEmailSender
-    //{
-    //    public Task SendEmailAsync(string email, string subject, string htmlMessage)
-    //    {
-    //        throw new NotImplementedException();
-    //    }
-    //}
+    public class EmailSend : IEmailSender
+    {
+        public Task SendEmailAsync(string email, string subject, string htmlMessage)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

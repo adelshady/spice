@@ -26,7 +26,7 @@ namespace spice.Areas.Admin.Controllers
             return View(await db.Coupon.ToListAsync());
         }
 
-        public async Task<ActionResult> Create()
+        public async Task<IActionResult> Create()
         {
             return View();
         }
@@ -34,7 +34,7 @@ namespace spice.Areas.Admin.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
 
-        public async Task<ActionResult> Create(Coupon coupon)
+        public async Task<IActionResult> Create(Coupon coupon)
         {
             if (ModelState.IsValid)
             {
@@ -59,14 +59,14 @@ namespace spice.Areas.Admin.Controllers
             return View(coupon);
         }
 
-        public async Task<ActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
             var couponid = db.Coupon.Find(id);
             return View(couponid);
         }
 
         [HttpPost]
-        public async Task<ActionResult> Edit(int id, Coupon coupon)
+        public async Task<IActionResult> Edit(int id, Coupon coupon)
         {
             var coup = db.Coupon.Where(x => x.Id == id).SingleOrDefault();
             if (ModelState.IsValid)
@@ -103,13 +103,13 @@ namespace spice.Areas.Admin.Controllers
         }
 
         
-        public async Task<ActionResult> Detalis(int id)
+        public async Task<IActionResult> Detalis(int id)
         {
             var coupon = await db.Coupon.Where(x => x.Id == id).SingleOrDefaultAsync();
             return View(coupon);
         }
 
-        public async Task<ActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var coupon = await db.Coupon.Where(x => x.Id == id).SingleOrDefaultAsync();
             db.Coupon.Remove(coupon);

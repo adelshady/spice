@@ -27,7 +27,7 @@ namespace spice.Areas.Admin.Controllers
             return View(await db.ApplicationUser.Where(x => x.Id != claim.Value).ToListAsync());
         }
 
-        public async Task<ActionResult> Lock(string id)
+        public async Task<IActionResult> Lock(string id)
         {
             if (id == null)
             {
@@ -44,7 +44,7 @@ namespace spice.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<ActionResult> UnLock(string id)
+        public async Task<IActionResult> UnLock(string id)
         {
             if (id == null)
             {

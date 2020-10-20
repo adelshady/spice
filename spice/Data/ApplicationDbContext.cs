@@ -24,6 +24,10 @@ namespace spice.Data
 
         public DbSet<ApplicationUser> ApplicationUser { get; set; }
 
+        public DbSet<ShoppingCart> shoppingCart{ get; set; }
+        public DbSet<OrderHeader> OrderHeader { get; set; }
+        public DbSet<OrderDetalis> OrderDetalis { get; set; }
+
 
 
     }

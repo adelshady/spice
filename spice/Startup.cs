@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using spice.Services;
+using spice.Utiles;
+using Stripe;
 
 namespace spice
 {
@@ -39,12 +41,21 @@ namespace spice
                 .AddDefaultUI()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-         //   services.AddSingleton<IEmailSender, EmailSend>();
+            services.Configure<StripeSetting>(Configuration.GetSection("Stripe"));
+          services.AddSingleton<IEmailSender, EmailSend>();
             services.AddControllersWithViews();
             services.AddRazorPages();
             services.Configure<FormOptions>(x =>
             {
                 x.MultipartBodyLengthLimit = 1_000_000;
+            });
+
+
+            services.AddSession(options =>
+            {
+                options.Cookie.IsEssential = true;
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                options.Cookie.HttpOnly = true;
             });
         }
 
@@ -64,9 +75,9 @@ namespace spice
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseSession();
             app.UseRouting();
-           
+            StripeConfiguration.ApiKey = Configuration.GetSection("Stripe")["Secretkey"];
             app.UseAuthentication();
             app.UseAuthorization();
 
