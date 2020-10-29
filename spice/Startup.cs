@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using spice.Services;
 using spice.Utiles;
 using Stripe;
+using Microsoft.AspNetCore.Authentication.Facebook;
 
 namespace spice
 {
@@ -50,6 +51,12 @@ namespace spice
                 x.MultipartBodyLengthLimit = 1_000_000;
             });
 
+            services.AddAuthentication().AddFacebook(FacebookOptions =>
+            {
+
+                FacebookOptions.AppId = "427844851537455";
+                FacebookOptions.AppSecret = "9d68abaafce7a2886c7856b1e69f9dc7";
+            });
 
             services.AddSession(options =>
             {

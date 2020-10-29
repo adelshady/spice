@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using spice.Models;
+using spice.Utiles;
 
 namespace spice.Areas.Identity.Pages.Account
 {
@@ -23,21 +25,25 @@ namespace spice.Areas.Identity.Pages.Account
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger<ExternalLoginModel> _logger;
+        private readonly RoleManager<IdentityRole> roleManager;
 
         public ExternalLoginModel(
             SignInManager<IdentityUser> signInManager,
             UserManager<IdentityUser> userManager,
             ILogger<ExternalLoginModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            RoleManager<IdentityRole> RoleManager)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _logger = logger;
             _emailSender = emailSender;
+            roleManager = RoleManager;
         }
 
         [BindProperty]
         public InputModel Input { get; set; }
+
 
         public string ProviderDisplayName { get; set; }
 
@@ -51,6 +57,24 @@ namespace spice.Areas.Identity.Pages.Account
             [Required]
             [EmailAddress]
             public string Email { get; set; }
+            [Required]
+            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [DataType(DataType.Password)]
+            [Display(Name = "Password")]
+            public string Password { get; set; }
+
+            [DataType(DataType.Password)]
+            [Display(Name = "Confirm password")]
+            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            public string ConfirmPassword { get; set; }
+            [Required]
+            public string Name { get; set; }
+            public string phoneNumber { get; set; }
+            public string StreetAddress { get; set; }
+
+            public string city { get; set; }
+            public string state { get; set; }
+            public string postalcode { get; set; }
         }
 
         public IActionResult OnGetAsync()
@@ -101,7 +125,8 @@ namespace spice.Areas.Identity.Pages.Account
                 {
                     Input = new InputModel
                     {
-                        Email = info.Principal.FindFirstValue(ClaimTypes.Email)
+                        Email = info.Principal.FindFirstValue(ClaimTypes.Email),
+                        Name = info.Principal.FindFirstValue(ClaimTypes.Name)                       
                     };
                 }
                 return Page();
@@ -121,11 +146,22 @@ namespace spice.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser { UserName = Input.Email, Email = Input.Email };
+                var user = new ApplicationUser
+                {
+                    UserName = Input.Email,
+                    Email = Input.Email,
+                    state = Input.state,
+                    Name = Input.Name,
+                    PhoneNumber = Input.phoneNumber,
+                    postalcode = Input.postalcode,
+                    city = Input.city,
+                    StreetAddress = Input.StreetAddress
+                };
 
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
+                    await _userManager.AddToRoleAsync(user, SD.CustonerEndUser);
                     result = await _userManager.AddLoginAsync(user, info);
                     if (result.Succeeded)
                     {

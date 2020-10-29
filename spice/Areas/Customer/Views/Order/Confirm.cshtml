@@ -1,0 +1,34 @@
+﻿@model spice.Models.ViewModels.OrderDetalisViewModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="backgroundWhite">
+    <div class="row px-3">
+        <div class="col-8">
+            <h2 class="text-info">Order Confirm </h2>
+        </div>
+            <div class="col-4 text-right">
+                <a asp-area="Customer" asp-controller="Home" asp-action="Index" class="btn btn-success form-control">New Order</a>
+            </div>
+       
+    </div>
+
+    @if (Model.orderHeader !=null)
+    {
+        <div style="color:maroon" class="p-3">
+            Your Order Has been Confirmed please see the order summary below
+            <br />
+            feel free to contact us if you have any questions.
+        </div>
+        <partial name="_IndividualOrderDetalis" model="Model" />
+
+    }
+    else
+    {
+        <div class="text-danger">
+            Error.... Please try again
+        </div>
+    }
+</div>

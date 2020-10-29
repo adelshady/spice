@@ -111,9 +111,9 @@ namespace spice.Areas.Customer.Controllers
             var claim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
 
             detalisCart.ListCart = await db.shoppingCart.Where(x => x.ApplicationUserId == claim.Value).ToListAsync();
-            detalisCart.orderHeader.paymentstatus = "pending";
+            detalisCart.orderHeader.paymentstatus = SD.PaymentStatusPending;
             detalisCart.orderHeader.PickUpTime = Convert.ToDateTime(detalisCart.orderHeader.PickUpDate.ToShortDateString() + " " + detalisCart.orderHeader.PickUpTime.ToShortTimeString());
-            detalisCart.orderHeader.status = "pending";
+            detalisCart.orderHeader.status = SD.PaymentStatusPending;
             detalisCart.orderHeader.UserId = claim.Value;
             detalisCart.orderHeader.OrderDate = DateTime.Now;
 
@@ -165,7 +165,7 @@ namespace spice.Areas.Customer.Controllers
 
             if (charge.BalanceTransactionId == null)
             {
-                detalisCart.orderHeader.paymentstatus = "Rejected";
+                detalisCart.orderHeader.paymentstatus = SD.PaymentStatusRejected;
             }
             else
             {
@@ -173,16 +173,18 @@ namespace spice.Areas.Customer.Controllers
             }
             if(charge.Status.ToLower() == "succeeded")
             {
-                detalisCart.orderHeader.paymentstatus = "Approved";
-                detalisCart.orderHeader.status = "Submitted";
+                detalisCart.orderHeader.paymentstatus = SD.PaymentStatusApproved;
+                detalisCart.orderHeader.status = SD.StatusSubmitted;
             }
             else
             {
-                detalisCart.orderHeader.paymentstatus = "Rejected";
+                detalisCart.orderHeader.paymentstatus = SD.PaymentStatusRejected;
             }
             await db.SaveChangesAsync();
 
-            return RedirectToAction("Index","Home");
+            return RedirectToAction("Confirm", "Order",new { id= detalisCart.orderHeader.Id});
+
+
         }
 
 

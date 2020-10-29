@@ -47,6 +47,46 @@
                                 <a class="nav-link " asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                             </li>
                         }
+                        @if (User.IsInRole(spice.Utiles.SD.MangerUser) || User.IsInRole(spice.Utiles.SD.KitchenUser) || User.IsInRole(spice.Utiles.SD.FrontDeskUser))
+                        {
+                            <li class="nav-item dropdown text-white-50">
+                                <a class="nav-link dropdown-toggle" href="#" id="dropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Order
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropDownMenuLink">
+                                    @if (User.IsInRole(spice.Utiles.SD.MangerUser) || User.IsInRole(spice.Utiles.SD.KitchenUser))
+                                    {
+                                        <a class="dropdown-item" asp-action="MangeOrder" asp-controller="Order" asp-area="Customer">Mange Order</a>
+                                    }
+                                    @if (User.IsInRole(spice.Utiles.SD.MangerUser) || User.IsInRole(spice.Utiles.SD.FrontDeskUser))
+                                    {
+
+
+                                        <a class="dropdown-item" asp-action="Index" asp-controller="Order" asp-area="Customer">PickUpOrder</a>
+                                    }
+                                </div>
+
+                            </li>
+                        }
+
+                        @if (User.IsInRole(spice.Utiles.SD.MangerUser) || User.IsInRole(spice.Utiles.SD.CustonerEndUser))
+                        {
+                            <li class="nav-item">
+                                <a asp-area="Customer" asp-controller="Order" asp-action="OrderHistory" class="nav-link">
+                                    Order History
+                                </a>
+                            </li>
+                        }
+
+                        @if (User.IsInRole(spice.Utiles.SD.MangerUser) || User.IsInRole(spice.Utiles.SD.CustonerEndUser))
+                        {
+                            <li class="nav-item">
+                                <a asp-area="Customer" asp-controller="Order" asp-action="TotalOrder" class="nav-link">
+                                    Total Order
+                                </a>
+                            </li>
+                        }
+
                         @if (HttpContextAccessor.HttpContext.Session.GetInt32("ssCartCount") != null)
                         {
                             <li style="color:white">

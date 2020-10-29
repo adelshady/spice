@@ -12,10 +12,21 @@ namespace spice.Utiles
         public const string KitchenUser= "KitchenUser";
         public const string FrontDeskUser = "FrontDesk";
         public const string CustonerEndUser = "Customer";
-        
+        public const string StatusInProcess = "Being Prepared";
 
+        public const string StatusSubmitted = "Submitted";
 
+        public const string StatusReady = "Ready For Pickup";
 
+        public const string StatusCompleted = "Completed";
+
+        public const string StatusCancelled = "Cancelled";
+
+        public const string PaymentStatusPending = "Pending";
+
+        public const string PaymentStatusApproved = "Aprroved";
+
+        public const string PaymentStatusRejected = "Rejected";
 
         public static string ConvertToRawHtml(string source)
         {

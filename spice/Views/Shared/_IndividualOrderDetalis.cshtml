@@ -1,0 +1,103 @@
+﻿@model spice.Models.ViewModels.OrderDetalisViewModel
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+<form method="post">
+    <div class="container row border ml-1 backgroundWhite10Padding" style="width:100%">
+        <div class="col-lg-8" style="border-right:1px solid #bbb9b9">
+            <br />
+            <input hidden asp-for="orderHeader.Id" />
+            <div class="form-group row">
+                <div class="col-3">
+                    <label>Name</label>
+                </div>
+                <div class="col-9">
+                    <input asp-for="orderHeader.PickName" disabled class="form-control" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-3">
+                    <label>PhoneNumber</label>
+                </div>
+                <div class="col-9">
+                    <input asp-for="orderHeader.ApplicationUser.PhoneNumber" disabled class="form-control" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-3">
+                    <label>Email</label>
+                </div>
+                <div class="col-9">
+                    <input asp-for="orderHeader.ApplicationUser.Email" disabled class="form-control" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-3">
+                    <label>Order Total</label>
+                </div>
+                <div class="col-9">
+                    <input asp-for="@Model.orderHeader.OrderTotal" disabled class="form-control" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-3">
+                    <label>Order Date</label>
+                </div>
+                <div class="col-9">
+                    <input value="@Model.orderHeader.PickUpTime.ToShortDateString() @Model.orderHeader.PickUpTime.ToShortTimeString()" disabled class="form-control" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-3">
+                    <label>Comments</label>
+                </div>
+                <div class="col-9">
+                    <input asp-for="@Model.orderHeader.comment" disabled class="form-control" />
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-12">
+
+            <h4 class="d-flex justify-content-between align-content-center mb-3">
+                <span class="text-muted">Order ID :</span>
+                <span class="badge badge-secondary badge-pill">@Model.orderHeader.Id</span>
+            </h4>
+            <ul class="list-group mb-3">
+                @{ var total = 0.0;
+                    var a = Model;
+                    
+                    }
+
+                @foreach (var detalis in Model.orderDetalis)
+                {
+                    <li class="list-group-item d-flex justify-content-between">
+                        <div>
+                            <h6 class="my-0"> @detalis.Name</h6>
+                            <small class="text-muted">Quantity : @detalis.Count</small>
+                        </div>
+                        <span class="text-muted">$@(detalis.Price * detalis.Count)</span>
+                    </li>
+                }
+                @if (Model.orderHeader.CouponCode != null)
+                {
+                    <li class="list-group-item d-flex justify-content-between">
+                        <div class="text-success">
+                            <h6 class="my-0"> Promo Code </h6>
+                            <small class="text-success">@Model.orderHeader.CouponCode</small>
+                        </div>
+                        <span class="text-success">-$@(total - Model.orderHeader.OrderTotal)</span>
+                    </li>
+                }
+                <li class="list-group-item d-flex justify-content-between bg-light">
+                    <small class="text-info">Total (USD) </small>
+                    <strong class="text-info">$@(Model.orderHeader.OrderTotal)</strong>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</form>
+
+           
