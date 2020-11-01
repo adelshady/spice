@@ -15,6 +15,9 @@ using spice.Data;
 using Microsoft.EntityFrameworkCore;
 using spice.Models;
 using Microsoft.AspNetCore.Http;
+using spice.Utiles;
+using System.Security.Claims;
+using System.Linq.Expressions;
 
 namespace spice.Areas.Identity.Pages.Account
 {
@@ -26,7 +29,7 @@ namespace spice.Areas.Identity.Pages.Account
         private readonly ILogger<LoginModel> _logger;
         public readonly ApplicationDbContext db;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, 
+        public LoginModel(SignInManager<IdentityUser> signInManager,
             ILogger<LoginModel> logger,
             UserManager<IdentityUser> userManager,
             ApplicationDbContext _db)
@@ -89,11 +92,17 @@ namespace spice.Areas.Identity.Pages.Account
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
+                  
                     var user = await db.ApplicationUser.Where(x => x.Email == Input.Email).FirstOrDefaultAsync();
-
+                    
                     List<ShoppingCart> lstshoppingCarts = await db.shoppingCart.Where(x => x.ApplicationUserId == user.Id).ToListAsync();
                     HttpContext.Session.SetInt32("ssCartCount", lstshoppingCarts.Count);
+
+                    HttpContext.Session.SetString(SD.SessionFrontDiskAndManger, user.Name);
+
+               
                     _logger.LogInformation("User logged in.");
+
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)

@@ -6,131 +6,76 @@
 
 <br />
 <br />
-
-<div class="border backgroundWhite">
-    <div class="row">
-        <div class="col-6">
-            <h2 class="text-info"> Order History</h2>
+<form method="get">
+    <div class="border backgroundWhite">
+        <div class="row">
+            <div class="col-6">
+                <h2 class="text-info"> Order Sheet</h2>
+            </div>
+            <div class="col-6 text-right">
+                @*<a asp-action="Create" class="btn btn-info"><i class="fas fa-plus"></i> &nbsp; Create New </a>*@
+                <h6></h6>
+                <partial name="_partialCreateButton" />
+                @*@Html.Partial("~/Views/Shared/_partialCreateButton.cshtml")*@
+            </div>
         </div>
-        <div class="col-6 text-right">
-            @*<a asp-action="Create" class="btn btn-info"><i class="fas fa-plus"></i> &nbsp; Create New </a>*@
-            <partial name="_partialCreateButton" />
-            @*@Html.Partial("~/Views/Shared/_partialCreateButton.cshtml")*@
-        </div>
-    </div>
-    <br />
-    @if (Model.Count() > 0)
-    {
-        <table class="table table-striped border">
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(x => x.orderHeader.Id)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(x => x.orderHeader.PickName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(x => x.orderHeader.ApplicationUser.Email)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(x => x.orderHeader.PickUpTime)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(x => x.orderHeader.OrderTotal)
-                </th>
-                <th>
-                    Total Item
-                </th>
-                <th></th>
+        <br />
 
-            </tr>
-            @foreach (var item in Model)
-            {
+        @if (Model.Count() > 0)
+        {
+            <table class="table table-striped border">
                 <tr>
-                    <td>
-                        @Html.DisplayFor(x => item.orderHeader.Id)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(x => item.orderHeader.PickName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(x => item.orderHeader.ApplicationUser.Email)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(x => item.orderHeader.PickUpTime)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(x => item.orderHeader.OrderTotal)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(x => item.orderDetalis.Count)
-                    </td>
-                    <td>
-                        <button type="submit" class="btn btn-success anchorDetalis" data-id="@item.orderHeader.Id" data-toggle="modal">
-                            <i class="far fa-list-alt"></i> Detalis
-                        </button>
-                    </td>
+                    <th>
+                        @Html.DisplayNameFor(x => x.orderHeader)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(x => x.orderHeader.PickName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(x => x.orderHeader.ApplicationUser.Email)
+                    </th>
+                    <th>
+                        Count
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(x => x.orderHeader.OrderTotal)
+                    </th>
+                    <th></th>
+
                 </tr>
-            }
-        </table>
-    }
-    else
-    {
-        <p>no Category list</p>
-    }
-</div>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(x => item.orderHeader.Id)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(x => item.orderHeader.PickName)
+                        </td>
+                        <th>
+                            @Html.DisplayNameFor(x => item.orderHeader.ApplicationUser.UserName)
+                        </th>
+                        <td>
+                            @Html.DisplayFor(x => item.orderDetalis.Count)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(x => item.orderHeader.OrderTotal)
+                        </td>
+                        <td>
+                            @*<button type="button" class="btn btn-success" asp-action="Bill" asp-controller="Order" asp-route-id="@item.orderHeader.Id">
+                                  Detalis
+                                </button>*@
+                            @Html.ActionLink("Detalis", "Bill", "Order", new { id = item.orderHeader.Id, @class = "btn btn-success" })
+                        </td>
 
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog-centered modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header bg-success text-light justify-content-center">
-                <h5 class="modal-title">Order Detalis</h5>
-            </div>
-            <div class="modal-body justify-content-center" id="myModalContent">
-
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" style="width:20%" data-dismiss="modal">
-                    Close
-                </button>
-            </div>
-        </div>
+                    </tr>
+                }
+            </table>
+        }
+        else
+        {
+            <p>no Category list</p>
+        }
     </div>
-</div>
 
-
-
-@section scripts{
-    <script>
-        var Url = '/Customer/Order/GetOrderDetalis';
-        $(function () {
-            $(".anchorDetalis").click(function () {
-
-                var buttonClick = $(this);
-
-                var id = buttonClick.attr('data-id');
-
-                $.ajax({
-                    type: 'GET',
-                    url: Url,
-                  contentType: "application/json ; charset=utf-8",
-                    data: { "Id": id },
-                    cache: false,
-                    dataType: 'json',
-                    success : function (data) {
-                        $('#myModalContent').html(data);
-                        $('#myModal').modal('show');
-                    },
-                    error: function () {
-                        alert("Daynmic content load failed");
-                    }
-
-                })
-            })
-        })
-
-    </script>
-
-
-
-}
+</form>

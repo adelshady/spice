@@ -19,6 +19,8 @@ using spice.Services;
 using spice.Utiles;
 using Stripe;
 using Microsoft.AspNetCore.Authentication.Facebook;
+using Rotativa.AspNetCore;
+
 
 namespace spice
 {
@@ -50,6 +52,8 @@ namespace spice
             {
                 x.MultipartBodyLengthLimit = 1_000_000;
             });
+
+      
 
             services.AddAuthentication().AddFacebook(FacebookOptions =>
             {
@@ -85,6 +89,7 @@ namespace spice
             app.UseSession();
             app.UseRouting();
             StripeConfiguration.ApiKey = Configuration.GetSection("Stripe")["Secretkey"];
+           
             app.UseAuthentication();
             app.UseAuthorization();
 
@@ -95,6 +100,7 @@ namespace spice
                     pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapRazorPages();
             });
+            //RotativaConfiguration.Setup(env);
         }
     }
 }

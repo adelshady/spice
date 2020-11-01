@@ -7,6 +7,7 @@ namespace spice.Utiles
 {
     public class SD
     {
+        public const string SessionFrontDiskAndManger = "SessionFrontDiskAndManger";
         public const string DefaultFoodImage = "images.jpg";
         public const string MangerUser = "Manger";
         public const string KitchenUser= "KitchenUser";

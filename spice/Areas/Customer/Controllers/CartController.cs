@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -20,11 +21,15 @@ namespace spice.Areas.Customer.Controllers
     [Area("Customer")]
     public class CartController : Controller
     {
+        
+        private readonly IEmailSender emailSender;
+       
         public readonly ApplicationDbContext db;
         [BindProperty]
         public OrderDetalisCart detalisCart { get; set; }
-        public CartController(ApplicationDbContext _db)
+        public CartController(ApplicationDbContext _db, IEmailSender _emailSender)
         {
+            emailSender = _emailSender;
             db = _db;
         }
         public async Task<IActionResult> Index()
@@ -173,6 +178,7 @@ namespace spice.Areas.Customer.Controllers
             }
             if(charge.Status.ToLower() == "succeeded")
             {
+                await emailSender.SendEmailAsync(db.Users.Where(x => x.Id == claim.Value).FirstOrDefault().Email, "Spice - order Created " + detalisCart.orderHeader.Id.ToString(), "order has been submitted successfuly");
                 detalisCart.orderHeader.paymentstatus = SD.PaymentStatusApproved;
                 detalisCart.orderHeader.status = SD.StatusSubmitted;
             }

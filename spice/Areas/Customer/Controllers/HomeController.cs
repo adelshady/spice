@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 using spice.Data;
 using spice.Models;
 using spice.Models.ViewModels;
-using Microsoft.AspNetCore.Authorization;
+//using Microsoft.AspNetCore.Authorization;
 
 namespace spice.Controllers
 {

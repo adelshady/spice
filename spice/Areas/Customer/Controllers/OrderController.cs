@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using spice.Data;
@@ -11,14 +14,18 @@ using spice.Models;
 using spice.Models.ViewModels;
 using spice.Utiles;
 
+
 namespace spice.Areas.Customer.Controllers
 {
     [Area("Customer")]
     public class OrderController : Controller
     {
+      
         private readonly ApplicationDbContext db;
-        public OrderController(ApplicationDbContext _db)
+        private readonly IEmailSender emailSender;
+        public OrderController(ApplicationDbContext _db , IEmailSender _emailSender)
         {
+            emailSender = _emailSender;
             db = _db;
         }
         [Authorize]
@@ -43,6 +50,7 @@ namespace spice.Areas.Customer.Controllers
             return View();
         }
 
+
         public async Task<IActionResult> OrderHistory()
         {
             var claimidentity = (ClaimsIdentity)User.Identity;
@@ -63,25 +71,20 @@ namespace spice.Areas.Customer.Controllers
             return View(OrderDetalis);
         }
 
-        public async Task<IActionResult> TotalOrder()
+        [HttpGet]
+        public async Task<IActionResult> Invoice(int? id)
         {
-            
-
-            List<OrderDetalisViewModel> OrderDetalis = new List<OrderDetalisViewModel>();
-            List<OrderHeader> orderHeaders = await db.OrderHeader.Include(x=>x.ApplicationUser).ToListAsync();
-
-       //     List<OrderHeader> orderHeaders = await db.OrderHeader.Include(x => x.ApplicationUser).Where(x => x.UserId == cliam.Value).ToListAsync();
-            foreach (var item in orderHeaders)
-            {
+          
+          
                 OrderDetalisViewModel orderDetalisVM = new OrderDetalisViewModel()
                 {
-                    orderHeader = item,
-                    orderDetalis = await db.OrderDetalis.Where(x => x.OrderId == item.Id).ToListAsync()
+                    orderHeader = await db.OrderHeader.Include(x => x.ApplicationUser).Where(x => x.Id == id).FirstOrDefaultAsync(),
+                    orderDetalis = await db.OrderDetalis.Where(x => x.OrderId == id).ToListAsync()
                 };
-                OrderDetalis.Add(orderDetalisVM);
-            }
-            return View(OrderDetalis.OrderByDescending(x=>x.orderHeader.PickUpTime));
+               
+            return View(orderDetalisVM);
         }
+
 
         [Authorize(Roles = SD.MangerUser + "," + SD.KitchenUser)]
         public async Task<IActionResult> MangeOrder()
@@ -108,6 +111,8 @@ namespace spice.Areas.Customer.Controllers
             OrderHeader orderHeader = await db.OrderHeader.FindAsync(id);
             orderHeader.status = SD.StatusInProcess;
             await db.SaveChangesAsync();
+            await emailSender.SendEmailAsync(db.Users.Where(x => x.Id == orderHeader.UserId).FirstOrDefault().Email, "Spice - order Created " + orderHeader.Id.ToString(), "order has been Preaper successfuly");
+
             return RedirectToAction(nameof(MangeOrder));
         }
         [Authorize(Roles = SD.MangerUser + "," + SD.KitchenUser)]
@@ -117,6 +122,8 @@ namespace spice.Areas.Customer.Controllers
             orderHeader.status = SD.StatusReady;
             await db.SaveChangesAsync();
             //  email logic to notify user that order is read for pickup
+            await emailSender.SendEmailAsync(db.Users.Where(x => x.Id == orderHeader.UserId).FirstOrDefault().Email, "Spice - order Created " + orderHeader.Id.ToString(), "order has been Ready successfuly");
+
             return RedirectToAction(nameof(MangeOrder));
         }
         [Authorize(Roles = SD.MangerUser + "," + SD.KitchenUser)]
@@ -125,6 +132,8 @@ namespace spice.Areas.Customer.Controllers
             OrderHeader orderHeader = await db.OrderHeader.FindAsync(id);
             orderHeader.status = SD.StatusCancelled;
             await db.SaveChangesAsync();
+            await emailSender.SendEmailAsync(db.Users.Where(x => x.Id == orderHeader.UserId).FirstOrDefault().Email, "Spice - order Created " + orderHeader.Id.ToString(), "order has been Canceled successfuly");
+
             return RedirectToAction(nameof(MangeOrder));
         }
 
@@ -140,6 +149,76 @@ namespace spice.Areas.Customer.Controllers
 
             return PartialView("_IndividualOrderDetalis", orderDetalisVM);
         }
+        // Order Details action link
+        [Authorize]
+        public async Task<IActionResult> OrderPickup(string searchName = null, string searchPhone = null, string searchEmail = null)
+        {
 
+            StringBuilder pram = new StringBuilder();
+            pram.Append("/Customer/Order/OrderPickup?");
+            pram.Append("&searchName");
+            if (searchName != null)
+            {
+                pram.Append(searchName);
+            }
+            pram.Append("&srearchPhone");
+            if (searchPhone != null)
+            {
+                pram.Append(searchPhone);
+            }
+            pram.Append("&srearchEmail");
+            if (searchEmail != null)
+            {
+                pram.Append(searchEmail);
+            }
+            List<OrderDetalisViewModel> orderList = new List<OrderDetalisViewModel>();
+            List<OrderHeader> orderHeader = new List<OrderHeader>();
+            if (searchPhone != null || searchName != null || searchEmail != null)
+            {
+
+                var user = new ApplicationUser();
+
+                if (searchName != null)
+                {
+                    orderHeader = await db.OrderHeader.Where(o => o.PickName.ToLower().Contains(searchName.ToLower()) && o.status == SD.StatusReady)
+                        .OrderByDescending(o => o.OrderDate).ToListAsync();
+                }
+                else
+                {
+                    if (searchPhone != null)
+                    {
+                        orderHeader = await db.OrderHeader.Where(o => o.PickName.Contains(searchName) && o.status == SD.StatusReady)
+                            .OrderByDescending(o => o.OrderDate).ToListAsync();
+                    }
+                    else
+                    {
+                        user = await db.ApplicationUser.Where(u => u.Email.ToLower().Contains(searchEmail.ToLower())).FirstOrDefaultAsync();
+                        if (searchEmail != null)
+                        {
+                            orderHeader = await db.OrderHeader.Include(o => o.ApplicationUser)
+                                .Where(o => o.UserId == user.Id && o.status == SD.StatusReady).OrderByDescending(o => o.OrderDate).ToListAsync();
+                        }
+                    }
+                }
+            }
+            else
+            {
+                orderHeader = await db.OrderHeader.Include(o => o.ApplicationUser).Where(x => x.status == SD.StatusReady).ToListAsync();
+
+            }
+            foreach (OrderHeader item in orderHeader)
+            {
+                OrderDetalisViewModel orderDetalisViewModel = new OrderDetalisViewModel()
+                {
+                    orderHeader = item,
+                    orderDetalis = await db.OrderDetalis.Where(o => o.OrderId == item.Id).ToListAsync()
+                };
+                orderList.Add(orderDetalisViewModel);
+            }
+            return View(orderList);
+        }
+        
     }
+
 }
+

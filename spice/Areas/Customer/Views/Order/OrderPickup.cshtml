@@ -1,0 +1,164 @@
+﻿@model IEnumerable<spice.Models.ViewModels.OrderDetalisViewModel>
+@{
+    ViewData["Title"] = "OrderHistory";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<form method="post">
+    <br />
+    <br />
+    <h2 class="text-info">Orders Ready For Pickp :</h2>
+    <div class="border backgroundWhite">
+        <div class="container border border-secondary" style="height:60px;">
+            <div class="row container">
+                <div class="col-11 ">
+                    <div class=" row" style="padding-top:10px">
+                        <div class="col-4">
+                            @Html.Editor("searchName", new { htmlAttributes = new { @class = "form-control", placeholder = "Name...." } })
+                        </div>
+                        <div class="col-4">
+                            @Html.Editor("searchPhone", new { htmlAttributes = new { @class = "form-control", placeholder = "Phone...." } })
+                        </div>
+                        <div class="col-4">
+                            @Html.Editor("searchEmail", new { htmlAttributes = new { @class = "form-control", placeholder = "Email...." } })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-1">
+                    <div class="row" style="padding-top:10px;">
+                        <button type="submit" name="submit" value="Search" class="btn btn-info form-control">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <br />
+        <div>
+            @if (Model.Count() > 0)
+            {
+                <table class="table table-striped border">
+                    <tr class="table-secondary">
+                        <th>
+                            @Html.DisplayNameFor(x => x.orderHeader.Id)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(x => x.orderHeader.PickName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(x => x.orderHeader.ApplicationUser.Email)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(x => x.orderHeader.PickUpTime)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(x => x.orderHeader.OrderTotal)
+                        </th>
+                        <th>
+                            Total Item
+                        </th>
+
+                        <th>
+
+                        </th>
+                        <th>
+
+                        </th>
+
+
+                    </tr>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(m => item.orderHeader.Id)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(m => item.orderHeader.PickName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(m => item.orderHeader.ApplicationUser.Email)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(m => item.orderHeader.PickName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(m => item.orderHeader.OrderTotal)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(m => item.orderDetalis.Count)
+                            </td>
+                            <td>
+                                <button type="submit" class="btn btn-success anchorDetails" data-id="@item.orderHeader.Id" data-toggle="model">
+                                    <i class="far fa-list-alt"></i>
+                                    Details
+                                </button>
+                            </td>
+                            <td>
+                                <a  asp-action="Invoice" asp-controller="Order" class="btn btn-info" asp-route-id="@item.orderHeader.Id">
+                                   
+                                    <i class="far fa-list-alt"></i>
+                                    invoice
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </table>
+            }
+            else
+            {
+                <p>
+                    No Orders Ready For Pickp
+                </p>
+            }
+        </div>
+    </div>
+
+</form>
+<div class="modal fade" id="myModel" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog-centered modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-light justify-content-center">
+                <h5 class="modal-title">
+                    Order Details
+                </h5>
+            </div>
+            <div class="modal-body justify-content-center" id="myModelContent">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" style="width:20%" data-dismiss="model">Colse</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        debugger;
+        var PostBackURL = '/Customer/Order/GetOrderDetails';
+        $(function () {
+            $(".anchorDetails").click(function () {
+                var $buttonClicked = $(this);
+                var id = $buttonClicked.attr('data-id');
+                $.ajax({
+                    type: "Get",
+                    url: PostBackURL,
+                    contentType: "application/json; charset=utf-8",
+                    data: { "Id": id },
+                    cache: false,
+                    dataType: "json",
+                    success: function (data) {
+                        $('#myModelContent').html(data);
+                        $('#myModel').model('show');
+
+                    },
+                    error: function () {
+                        alert("Dynamic content load failed");
+                    }
+
+                })
+            })
+        })
+    </script>
+}

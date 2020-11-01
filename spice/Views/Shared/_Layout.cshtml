@@ -40,12 +40,7 @@
 
                             </li>
 
-                            <li class="nav-item">
-                                <a class="nav-link " asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link " asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                            </li>
+
                         }
                         @if (User.IsInRole(spice.Utiles.SD.MangerUser) || User.IsInRole(spice.Utiles.SD.KitchenUser) || User.IsInRole(spice.Utiles.SD.FrontDeskUser))
                         {
@@ -62,12 +57,32 @@
                                     {
 
 
-                                        <a class="dropdown-item" asp-action="Index" asp-controller="Order" asp-area="Customer">PickUpOrder</a>
+                                        <a class="dropdown-item" asp-action="OrderPickup" asp-controller="Order" asp-area="Customer">PickUpOrder</a>
                                     }
                                 </div>
 
                             </li>
                         }
+
+                        @*@if (User.IsInRole(spice.Utiles.SD.MangerUser))
+                        {
+                            <li class="nav-item dropdown text-white-50">
+                                <a class="nav-link dropdown-toggle" href="#" id="dropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Sales
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropDownMenuLink">
+
+                                    <a class="dropdown-item" asp-action="MangeOrder" asp-controller="Order" asp-area="Customer">Day</a>
+
+                                    <a class="dropdown-item" asp-action="Index" asp-controller="Order" asp-area="Customer">Week</a>
+
+                                    <a class="dropdown-item" asp-action="Index" asp-controller="Order" asp-area="Customer">Month</a>
+
+
+                                </div>
+
+                            </li>
+                        }*@
 
                         @if (User.IsInRole(spice.Utiles.SD.MangerUser) || User.IsInRole(spice.Utiles.SD.CustonerEndUser))
                         {
@@ -78,14 +93,7 @@
                             </li>
                         }
 
-                        @if (User.IsInRole(spice.Utiles.SD.MangerUser) || User.IsInRole(spice.Utiles.SD.CustonerEndUser))
-                        {
-                            <li class="nav-item">
-                                <a asp-area="Customer" asp-controller="Order" asp-action="TotalOrder" class="nav-link">
-                                    Total Order
-                                </a>
-                            </li>
-                        }
+                      
 
                         @if (HttpContextAccessor.HttpContext.Session.GetInt32("ssCartCount") != null)
                         {
