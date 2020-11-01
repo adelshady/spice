@@ -24,7 +24,7 @@ namespace spice.Controllers
         public HomeController(ApplicationDbContext _db)
         {
             db = _db;
-            var x;
+           
         }
 
         public async Task<IActionResult> Index()
